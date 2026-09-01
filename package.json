@@ -9,7 +9,12 @@
   ],
   "type": "module",
   "scripts": {
-    "ready": "vp check && vp run -r test && vp run -r build",
+    "check": "vp check && bun run typed:check",
+    "typed:check": "tsx tools/typed-lint/src/cli.ts check",
+    "diff:check": "tsx tools/diff-check/src/main.ts --config tools/diff-check/diff-check.config.json",
+    "test": "vp run -r test",
+    "build": "vp run -r build",
+    "ready": "bun run check && bun run test && bun run build",
     "dev": "vp run website#dev",
     "prepare": "effect-tsgo patch --oxlint"
   },
@@ -20,9 +25,14 @@
     "@effect/tsgo": "^0.38.0",
     "@effect/vitest": "^4.0.0-beta.107",
     "@oxlint/plugins": "^1.80.0",
+    "eslint-plugin-better-tailwindcss": "^4.7.0",
+    "fast-glob": "^3.3.3",
     "oxlint": "1.80.0",
     "oxlint-tsgolint": "7.0.2001",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "7.0.2",
+    "typescript-api": "npm:typescript@5.9.3",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },

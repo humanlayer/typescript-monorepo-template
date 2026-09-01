@@ -4,6 +4,18 @@ A starter for creating a Vite+ monorepo.
 
 ## Development
 
+- Run formatting, Oxlint/type checks, and the TypeOnce typed checks:
+
+```bash
+bun run check
+```
+
+- Check only changed lines and key files against `HEAD` (or pass `--base`):
+
+```bash
+bun run diff:check
+```
+
 - Check everything is ready:
 
 ```bash
