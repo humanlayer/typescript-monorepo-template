@@ -1,24 +1,42 @@
-import { defineRule } from "@oxlint/plugins";
+import { defineRule, type ESTree } from "@oxlint/plugins";
+
+const isTagKey = (key: ESTree.Node): boolean =>
+	(key.type === "Identifier" && key.name === "_tag") ||
+	(key.type === "Literal" && key.value === "_tag");
+
+const declarationOf = (
+	node: ESTree.Node,
+): ESTree.TSTypeAliasDeclaration | ESTree.TSInterfaceDeclaration | undefined => {
+	let current: ESTree.Node | null | undefined = node.parent;
+	while (current !== null && current !== undefined) {
+		if (
+			current.type === "TSTypeAliasDeclaration" ||
+			current.type === "TSInterfaceDeclaration"
+		) {
+			return current;
+		}
+		if (!current.type.startsWith("TS")) return undefined;
+		current = current.parent;
+	}
+	return undefined;
+};
 
 export const noManualTaggedTypeRule = defineRule({
 	meta: {
 		type: "problem",
 		docs: {
 			description:
-				"Derive tagged types from Data or Schema tagged constructors instead of declaring `_tag` in a type or interface.",
+				"Derive tagged types from a tagged Schema or Data constructor instead of declaring `_tag` in a type or interface.",
 		},
 		messages: {
 			manualTaggedType:
-				"Do not declare `_tag` in a type or interface. Define the value with Schema.TaggedStruct, Schema.TaggedClass, Schema.TaggedError, Schema.TaggedUnion, Data.TaggedClass, Data.TaggedError, or Data.taggedEnum, then infer its type from the schema with `export type X = typeof X.Type`.",
+				"Do not declare `_tag` by hand. Define the value with Schema.TaggedStruct, Schema.TaggedClass, Schema.TaggedError, Schema.TaggedUnion, Data.TaggedClass, Data.TaggedError, or Data.taggedEnum, then infer the type from it, e.g. `export type X = typeof X.Type`.",
 		},
 	},
 	createOnce(context) {
 		return {
 			TSPropertySignature(node) {
-				if (
-					(node.key.type === "Identifier" && node.key.name === "_tag") ||
-					(node.key.type === "Literal" && node.key.value === "_tag")
-				) {
+				if (isTagKey(node.key) && declarationOf(node) !== undefined) {
 					context.report({ node, messageId: "manualTaggedType" });
 				}
 			},
