@@ -53,6 +53,7 @@ export default defineConfig({
     },
     rules: {
       ...Object.fromEntries(effectTsgoRules.map((rule) => [rule, "error"])),
+      "effecttsgo/missing-pipeable-signature": "off",
       "no-console": "error",
       "no-empty": "error",
       "no-empty-function": "warn",
