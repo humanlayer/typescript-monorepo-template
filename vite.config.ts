@@ -1,5 +1,7 @@
-import { recommended } from "@effect/tsgo/oxlint-presets";
+import { presets } from "@effect/tsgo/oxlint-presets";
 import { defineConfig } from "vite-plus";
+
+const effectTsgoRules = Object.values(presets).flatMap((preset) => Object.keys(preset.rules ?? {}));
 
 export default defineConfig({
   staged: {
@@ -14,7 +16,7 @@ export default defineConfig({
     ],
   },
   lint: {
-    extends: [recommended],
+    extends: Object.values(presets),
     ignorePatterns: [
       "tools/diff-check/**",
       "tools/oxlint/anti-slop/**",
@@ -50,6 +52,7 @@ export default defineConfig({
       },
     },
     rules: {
+      ...Object.fromEntries(effectTsgoRules.map((rule) => [rule, "error"])),
       "no-console": "error",
       "no-empty": "error",
       "no-empty-function": "warn",
@@ -139,6 +142,7 @@ export default defineConfig({
       "anti-slop-effect/no-manual-effect-error-tag": "error",
       "anti-slop-effect/no-manual-tag-comparison": "error",
       "anti-slop-effect/no-manual-tagged-construction": "error",
+      "anti-slop-effect/no-manual-tagged-type": "error",
       "anti-slop-effect/no-service-constructor-imports": "error",
       "anti-slop-effect/prefer-effect-match": "error",
       "anti-slop-effect/prefer-tagged-error-handling": "error",
